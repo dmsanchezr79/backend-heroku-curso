@@ -1,7 +1,7 @@
 <template>
     <v-data-table
     :headers="headers"
-    :items="categorias"
+    :items="articulos"
     sort-by="calories"
     class="elevation-1"
     :loading="cargando"
@@ -11,7 +11,7 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Categorías</v-toolbar-title>
+        <v-toolbar-title>Artículos</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -30,7 +30,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              Nueva Categoría
+              Nuevo Artículo
             </v-btn>
           </template>
           <v-card>
@@ -52,10 +52,38 @@
                   <v-col
                     cols="12"
                   >
+                    <v-text-field
+                      v-model="editedItem.codigo"
+                      label="Codigo"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
                     <v-textarea
                       v-model="editedItem.descripcion"
                       label="Descripcion"
                     ></v-textarea>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-select
+                      v-model="categoria"
+                      label="Categoria"
+                      :items="categorias"
+                      item-text="nombre"
+                      item-value="id"
+                      return-object
+                    ></v-select>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-text-field
+                      v-model="editedItem.estado"
+                      label="Estado"
+                    ></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -123,7 +151,7 @@
 import Swal from 'sweetalert2'
 
 export default {
-    name: 'CategoriasComponent',
+    name: 'ArticulosComponent',
     data: () => ({
         dialog: false,
         dialogToggleActive: false,
@@ -137,26 +165,46 @@ export default {
         // },
         { text: 'ID', value: 'id' },
         { text: 'Nombre', value: 'nombre' },
+        { text: 'Código', value: 'codigo' },
         { text: 'Descripcion', value: 'descripcion' },
         { text: 'Estado', value: 'estado' },
+        { text: 'Categoría', value: 'categoria.nombre' },
         // { text: 'Protein (g)', value: 'protein' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
+      articulos: [],
       categorias: [],
+      categoria: '',
       editedId: -1,
       editedItem: {
+        id: 0,
         nombre: '',
         descripcion: '',
+        codigo: '',
+        estado: 0,
+        //categoriaId: '',
+        categoria: {
+          id: 0,
+          nombre: '',
+        }
       },
       defaultItem: {
+        id: 0,
         nombre: '',
         descripcion: '',
+        codigo: '',
+        estado: 0,
+        //categoriaId: '',
+        categoria: {
+          id: 0,
+          nombre: '',
+        }
       },
     }),
 
     computed: {
       formTitle () {
-        return this.editedId === -1 ? 'Nueva Categoría' : 'Editar Categoría'
+        return this.editedId === -1 ? 'Nuevo Artículo' : 'Editar Artículo'
       },
     },
 
@@ -170,7 +218,8 @@ export default {
     },
 
     created () {
-      this.list()
+      this.list(),
+      this.listCategorias();
     },
 
     beforeCreate() {
@@ -180,13 +229,9 @@ export default {
     methods: {
       list () {
         this.cargando = true;
-        this.$http.get('/categoria/list', {
-          headers: {
-            token: this.$store.state.token
-          }
-        })
+        this.$http.get('/articulo/list')
         .then((response) => {
-          this.categorias = response.data;
+          this.articulos = response.data;
           this.cargando = false;
         })
         .catch((error) => {
@@ -197,6 +242,7 @@ export default {
 
       editItem (item) {
         this.editedId = item.id;
+        this.categoria = item ? item.categoria : ''
         this.editedItem = Object.assign({}, item)
         this.dialog = true
       },
@@ -208,9 +254,9 @@ export default {
       },
 
       toggleActiveItemConfirm () {
-        //this.categorias.splice(this.editedId, 1)
+        //this.articulos.splice(this.editedId, 1)
         // 
-        const accion = this.editedItem.estado === 1 ? '/categoria/deactivate' : '/categoria/activate';
+        const accion = this.editedItem.estado === 1 ? '/articulo/deactivate' : '/articulo/activate';
         this.$http.put(accion, {
             id: this.editedId
           }, {
@@ -232,6 +278,7 @@ export default {
         this.dialog = false
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
+          this.categoria = ''
           this.editedId = -1
         })
       },
@@ -246,10 +293,12 @@ export default {
 
       save () {
         if (this.editedId > -1) {
-          this.$http.put('/categoria/update', {
+          this.$http.put('/articulo/update', {
             id: this.editedId,
             nombre: this.editedItem.nombre,
-            descripcion: this.editedItem.descripcion
+            descripcion: this.editedItem.descripcion,
+            codigo: this.editedItem.codigo,
+            categoriaId: this.categoria.id,
           }, {
           headers: {
             token: this.$store.state.token
@@ -263,9 +312,11 @@ export default {
             Swal.fire('Oops', 'Error: ' + error, 'error');
           })
         } else {
-          this.$http.post('/categoria/add', {
+          this.$http.post('/articulo/add', {
             nombre: this.editedItem.nombre,
-            descripcion: this.editedItem.descripcion
+            descripcion: this.editedItem.descripcion,
+            codigo: this.editedItem.codigo,
+            categoriaId: this.categoria.id,
           }, {
           headers: {
             token: this.$store.state.token
@@ -294,6 +345,22 @@ export default {
         } else {
           return 'activar'
         }
+      },
+        listCategorias() {
+        this.cargando = true;
+        this.$http.get('/categoria/list', {
+          headers: {
+            token: this.$store.state.token
+          }
+        })
+        .then((response) => {
+          this.categorias = response.data;
+          this.cargando = false;
+        })
+        .catch((error) => {
+          //return error
+          Swal.fire('Oops', 'Error: ' + error, 'error');
+        });
       },
     },
 }

@@ -1,7 +1,7 @@
 <template>
     <v-data-table
     :headers="headers"
-    :items="categorias"
+    :items="usuarios"
     sort-by="calories"
     class="elevation-1"
     :loading="cargando"
@@ -11,7 +11,7 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Categorías</v-toolbar-title>
+        <v-toolbar-title>Usuarios</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -30,7 +30,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              Nueva Categoría
+              Nuevo Usuario
             </v-btn>
           </template>
           <v-card>
@@ -52,10 +52,35 @@
                   <v-col
                     cols="12"
                   >
-                    <v-textarea
-                      v-model="editedItem.descripcion"
-                      label="Descripcion"
-                    ></v-textarea>
+                    <v-text-field
+                      v-model="editedItem.email"
+                      label="E-mail"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-text-field
+                      v-model="editedItem.rol"
+                      label="Rol"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-text-field
+                      v-model="editedItem.estado"
+                      label="Estado"
+                    ></v-text-field>
+                  </v-col>
+                  <v-col
+                    cols="12"
+                  >
+                    <v-text-field
+                      v-model="password"
+                      label="Password"
+                      type="password"
+                    ></v-text-field>
                   </v-col>
                 </v-row>
               </v-container>
@@ -123,40 +148,41 @@
 import Swal from 'sweetalert2'
 
 export default {
-    name: 'CategoriasComponent',
+    name: 'UsuariosComponent',
     data: () => ({
         dialog: false,
         dialogToggleActive: false,
         cargando: true,
         headers: [
-        // {
-        //   text: 'Dessert (100g serving)',
-        //   align: 'start',
-        //   sortable: false,
-        //   value: 'name',
-        // },
         { text: 'ID', value: 'id' },
         { text: 'Nombre', value: 'nombre' },
-        { text: 'Descripcion', value: 'descripcion' },
+        { text: 'E-mail', value: 'email' },
+        { text: 'Rol', value: 'rol' },
         { text: 'Estado', value: 'estado' },
-        // { text: 'Protein (g)', value: 'protein' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
-      categorias: [],
+      usuarios: [],
       editedId: -1,
+      password: '',
       editedItem: {
         nombre: '',
-        descripcion: '',
+        email: '',
+        rol: '',
+        estado: 0,
+        password: '',
       },
       defaultItem: {
         nombre: '',
-        descripcion: '',
+        email: '',
+        rol: '',
+        estado: 0,
+        password: '',
       },
     }),
 
     computed: {
       formTitle () {
-        return this.editedId === -1 ? 'Nueva Categoría' : 'Editar Categoría'
+        return this.editedId === -1 ? 'Nuevo Usuario' : 'Editar Usuario'
       },
     },
 
@@ -180,13 +206,13 @@ export default {
     methods: {
       list () {
         this.cargando = true;
-        this.$http.get('/categoria/list', {
+        this.$http.get('/usuario/list', {
           headers: {
             token: this.$store.state.token
           }
         })
         .then((response) => {
-          this.categorias = response.data;
+          this.usuarios = response.data;
           this.cargando = false;
         })
         .catch((error) => {
@@ -208,9 +234,7 @@ export default {
       },
 
       toggleActiveItemConfirm () {
-        //this.categorias.splice(this.editedId, 1)
-        // 
-        const accion = this.editedItem.estado === 1 ? '/categoria/deactivate' : '/categoria/activate';
+        const accion = this.editedItem.estado === 1 ? '/usuario/deactivate' : '/usuario/activate';
         this.$http.put(accion, {
             id: this.editedId
           }, {
@@ -233,6 +257,7 @@ export default {
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedId = -1
+          this.password = ''
         })
       },
 
@@ -241,15 +266,19 @@ export default {
         this.$nextTick(() => {
           this.editedItem = Object.assign({}, this.defaultItem)
           this.editedId = -1
+          this.password = ''
         })
       },
 
       save () {
         if (this.editedId > -1) {
-          this.$http.put('/categoria/update', {
+          this.$http.put('/usuario/update', {
             id: this.editedId,
             nombre: this.editedItem.nombre,
-            descripcion: this.editedItem.descripcion
+            email: this.editedItem.email,
+            estado: this.editedItem.estado,
+            rol: this.editedItem.rol,
+            password: this.password,
           }, {
           headers: {
             token: this.$store.state.token
@@ -263,9 +292,12 @@ export default {
             Swal.fire('Oops', 'Error: ' + error, 'error');
           })
         } else {
-          this.$http.post('/categoria/add', {
+          this.$http.post('/usuario/add', {
             nombre: this.editedItem.nombre,
-            descripcion: this.editedItem.descripcion
+            email: this.editedItem.email,
+            estado: this.editedItem.estado,
+            rol: this.editedItem.rol,
+            password: this.password,
           }, {
           headers: {
             token: this.$store.state.token
