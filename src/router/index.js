@@ -1,6 +1,5 @@
 import Vue from 'vue'
 import VueRouter from 'vue-router'
-import Home from '../views/Home.vue'
 import store from '../store'
 
 Vue.use(VueRouter)
@@ -9,7 +8,7 @@ const routes = [
   {
     path: '/',
     name: 'Home',
-    component: Home,
+    component: () => import(/* webpackChunkName: "Home" */ '../views/Home.vue'),
     meta: {
       public: true,
     }
@@ -17,9 +16,6 @@ const routes = [
   {
     path: '/about',
     name: 'About',
-    // route level code-splitting
-    // this generates a separate chunk (about.[hash].js) for this route
-    // which is lazy-loaded when the route is visited.
     component: () => import(/* webpackChunkName: "about" */ '../views/About.vue'),
     meta: {
       public: true,
@@ -89,9 +85,9 @@ router.beforeEach((to, from, next) => {
     next();
   }
   else if (to.matched.every(record => record.meta.auth)) {
-    console.log('Area privada');
+    // console.log('Area privada');
     // console.log('store.state.user.rol', store.state.user.rol);
-    console.log(localStorage.getItem('token'));
+    // console.log(localStorage.getItem('token'));
 
     if (store.state.user) {
       // Hacer validaciones por el rol
@@ -104,7 +100,6 @@ router.beforeEach((to, from, next) => {
         next();
       }
       else if (to.matched.every(record => record.meta.vendedor) && store.state.user.rol === 'Vendedor') {
-        console.log(to);
         console.log('Entra como vendedor');
         next();
       }
