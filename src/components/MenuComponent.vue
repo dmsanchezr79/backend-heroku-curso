@@ -4,6 +4,12 @@
     <!-- <v-app-bar-nav-icon></v-app-bar-nav-icon> -->
 
     <!-- <v-toolbar-title>Page title</v-toolbar-title> -->
+    <v-img
+      
+      max-height="150"
+      max-width="250"
+      src="@/assets/logo.png"
+    ></v-img>
 
     <v-spacer></v-spacer>
 

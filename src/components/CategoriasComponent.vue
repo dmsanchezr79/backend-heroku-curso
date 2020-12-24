@@ -11,7 +11,7 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Categorías</v-toolbar-title>
+        <v-toolbar-title>Administrar tipos de servicio</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -30,7 +30,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              Nueva Categoría
+              Nuevo tipo de Servicio
             </v-btn>
           </template>
           <v-card>
@@ -156,7 +156,7 @@ export default {
 
     computed: {
       formTitle () {
-        return this.editedId === -1 ? 'Nueva Categoría' : 'Editar Categoría'
+        return this.editedId === -1 ? 'Nuevo Tipo de Servicio' : 'Editar Tipo de Servicio'
       },
     },
 

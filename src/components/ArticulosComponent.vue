@@ -11,7 +11,7 @@
       <v-toolbar
         flat
       >
-        <v-toolbar-title>Artículos</v-toolbar-title>
+        <v-toolbar-title>Administrar Servicios</v-toolbar-title>
         <v-divider
           class="mx-4"
           inset
@@ -30,7 +30,7 @@
               v-bind="attrs"
               v-on="on"
             >
-              Nuevo Artículo
+              Nuevo Servicio
             </v-btn>
           </template>
           <v-card>
@@ -70,7 +70,7 @@
                   >
                     <v-select
                       v-model="categoria"
-                      label="Categoria"
+                      label="Tipo de Servicio"
                       :items="categorias"
                       item-text="nombre"
                       item-value="id"
@@ -168,7 +168,7 @@ export default {
         { text: 'Código', value: 'codigo' },
         { text: 'Descripcion', value: 'descripcion' },
         { text: 'Estado', value: 'estado' },
-        { text: 'Categoría', value: 'categoria.nombre' },
+        { text: 'Tipo de Servicio', value: 'categoria.nombre' },
         // { text: 'Protein (g)', value: 'protein' },
         { text: 'Actions', value: 'actions', sortable: false },
       ],
@@ -204,7 +204,7 @@ export default {
 
     computed: {
       formTitle () {
-        return this.editedId === -1 ? 'Nuevo Artículo' : 'Editar Artículo'
+        return this.editedId === -1 ? 'Nuevo Servicio' : 'Editar Servicio'
       },
     },
 

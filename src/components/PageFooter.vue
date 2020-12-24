@@ -12,7 +12,7 @@
             <!-- <h2>About us:</h2> -->
             
             <img  alt="" />
-            <div class="content">
+            <div class="content ml-5">
               <h3>
                 <p>
                   Sitio web desarrollado dentro del programa MisionTIC 2022
