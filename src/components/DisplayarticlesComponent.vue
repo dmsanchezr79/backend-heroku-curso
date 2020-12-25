@@ -14,7 +14,7 @@
 
           >
             <v-card-title>
-              {{ article.categoria.nombre }}
+              {{ article.nombre }}
             </v-card-title>
             <v-card-text>
               {{ article.descripcion }}
