@@ -2,7 +2,7 @@
     <v-layout>
         <v-row>
             <v-col>
-                <v-card>
+                <v-card >
                     <v-card-title>
                         Ingresar al área administrativa
                     </v-card-title>
@@ -11,13 +11,13 @@
     ref="form"
     lazy-validation
   >
-    <v-text-field
+    <v-text-field 
       v-model="login.email"
       label="E-mail"
       required
     ></v-text-field>
 
-    <v-text-field
+    <v-text-field 
       v-model="login.password"
       label="Password"
       type="password"
@@ -26,7 +26,7 @@
 
     <v-btn
       :disabled="!(this.login.password && this.login.email)"
-      color="success"
+      color="info"
       class="mr-4"
       block
       @click="loginUser"
